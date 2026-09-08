@@ -45,6 +45,6 @@ Model calls run server-side. The frontend only shows a single friendly generatio
 
 Generated jobs live under `DATA_DIR/jobs`. Completed jobs older than `MAX_AGE_DAYS` are removed automatically. If the directory grows beyond `MAX_STORAGE_GB`, the oldest non-running jobs are removed until at least 5GB has been cleared.
 
-The Docker Compose file applies the requested `150m` memory and `0.2` CPU limits. The limits constrain the app container; image generation compute and temporary provider-side processing happen in Gemini and Replicate.
+The Docker Compose file applies a `400m` memory and `0.2` CPU limit. The limits constrain the app container; image generation compute and temporary provider-side processing happen in Gemini and Replicate. The app defaults to 24MB per uploaded image and allows only one active generation at a time.
 
-For the memory limit, the app defaults to 8MB per uploaded image and allows only one active generation at a time. Gemini and Replicate perform the GPU-heavy image work outside the VPS container.
+Do not remove the upload limit while uploads use memory buffering: a single unbounded multipart request could exhaust the container or fill the VPS volume. If larger source images are needed, raise `MAX_IMAGE_MB` deliberately. A truly unlimited upload flow would require streaming uploads directly to disk with quota enforcement.

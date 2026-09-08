@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     volumes:
       - ./data:/app/data
-    mem_limit: 150m
+    mem_limit: 400m
     cpus: 0.2
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
