@@ -12,6 +12,7 @@ const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "0.0.0.0";
 const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(__dirname, "data"));
 const JOBS_DIR = path.join(DATA_DIR, "jobs");
+const UPLOADS_DIR = path.join(DATA_DIR, ".uploads");
 const APP_USERNAME = process.env.APP_USERNAME || "";
 const APP_PASSWORD = process.env.APP_PASSWORD || "";
 const SESSION_SECRET = process.env.SESSION_SECRET || "";
@@ -21,7 +22,6 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash-image";
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || "";
 const REAL_ESRGAN_MODEL = process.env.REPLICATE_REAL_ESRGAN_MODEL || "nightmareai/real-esrgan";
 const CONTROLNET_MODEL = process.env.REPLICATE_CONTROLNET_MODEL || "lucataco/sdxl-lightning-multi-controlnet";
-const MAX_IMAGE_BYTES = Number(process.env.MAX_IMAGE_MB || 3) * 1024 * 1024;
 const MAX_STORAGE_BYTES = Number(process.env.MAX_STORAGE_GB || 10) * 1024 * 1024 * 1024;
 const MAX_AGE_MS = Number(process.env.MAX_AGE_DAYS || 40) * 24 * 60 * 60 * 1000;
 const CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
@@ -32,10 +32,13 @@ const IS_SECURE = process.env.COOKIE_SECURE
 let activeJobId = null;
 
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+    filename: (_req, file, cb) => cb(null, `${randomId()}${extensionForMime(file.mimetype)}`)
+  }),
   limits: {
-    fileSize: MAX_IMAGE_BYTES,
     files: 3,
     fields: 4,
     fieldSize: 2 * 1024 * 1024
@@ -120,6 +123,10 @@ function requireAuth(req, res, next) {
 
 async function ensureStorage() {
   await fsp.mkdir(JOBS_DIR, { recursive: true });
+}
+
+async function removeUploadedFiles(files) {
+  await Promise.all((files || []).map((file) => fsp.rm(file.path, { force: true }).catch(() => {})));
 }
 
 async function readMetadata(jobId) {
@@ -462,38 +469,55 @@ app.post("/api/generate", requireAuth, upload.fields([
   { name: "target", maxCount: 1 },
   { name: "references", maxCount: 2 }
 ]), async (req, res) => {
-  if (activeJobId) return res.status(409).json({ error: "One edit is already being created. Please wait for it to finish." });
-  if (!req.files?.target?.[0]) return res.status(400).json({ error: "Upload a target image first." });
+  const uploadedFiles = Object.values(req.files || {}).flat();
+  if (activeJobId) {
+    await removeUploadedFiles(uploadedFiles);
+    return res.status(409).json({ error: "One edit is already being created. Please wait for it to finish." });
+  }
+  if (!req.files?.target?.[0]) {
+    await removeUploadedFiles(uploadedFiles);
+    return res.status(400).json({ error: "Upload a target image first." });
+  }
   const prompt = String(req.body?.prompt || "").trim();
-  if (!prompt) return res.status(400).json({ error: "Describe the edit you want to make." });
+  if (!prompt) {
+    await removeUploadedFiles(uploadedFiles);
+    return res.status(400).json({ error: "Describe the edit you want to make." });
+  }
   const target = req.files.target[0];
   const references = req.files.references || [];
   const id = randomId();
   const dir = path.join(JOBS_DIR, id);
-  await fsp.mkdir(dir, { recursive: true });
-  const targetFile = `target${extensionForMime(target.mimetype)}`;
-  await fsp.writeFile(path.join(dir, targetFile), target.buffer);
-  const referenceFiles = [];
-  for (let i = 0; i < references.length; i += 1) {
-    const ref = references[i];
-    const file = `reference-${i + 1}${extensionForMime(ref.mimetype)}`;
-    await fsp.writeFile(path.join(dir, file), ref.buffer);
-    referenceFiles.push({ file, mime: ref.mimetype });
+  try {
+    await fsp.mkdir(dir, { recursive: true });
+    const targetFile = `target${extensionForMime(target.mimetype)}`;
+    await fsp.rename(target.path, path.join(dir, targetFile));
+    const referenceFiles = [];
+    for (let i = 0; i < references.length; i += 1) {
+      const ref = references[i];
+      const file = `reference-${i + 1}${extensionForMime(ref.mimetype)}`;
+      await fsp.rename(ref.path, path.join(dir, file));
+      referenceFiles.push({ file, mime: ref.mimetype });
+    }
+    const job = {
+      id,
+      prompt,
+      targetFile,
+      targetMime: target.mimetype,
+      referenceFiles,
+      status: "processing",
+      step: "Preparing your images",
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    };
+    await writeMetadata(job);
+    activeJobId = id;
+    processJob(job);
+    res.status(202).json({ job: publicJob(job) });
+  } catch (error) {
+    await removeUploadedFiles(uploadedFiles);
+    await fsp.rm(dir, { recursive: true, force: true }).catch(() => {});
+    throw error;
   }
-  const job = {
-    id,
-    prompt,
-    targetFile,
-    targetMime: target.mimetype,
-    referenceFiles,
-    status: "processing",
-    step: "Preparing your images",
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  await writeMetadata(job);
-  processJob(job);
-  res.status(202).json({ job: publicJob(job) });
 });
 
 app.delete("/api/jobs/:id", requireAuth, async (req, res) => {
@@ -515,8 +539,8 @@ app.get("/media/:jobId/:filename", requireAuth, async (req, res) => {
 });
 
 app.use((error, _req, res, _next) => {
-  if (error instanceof multer.MulterError || error?.code === "LIMIT_FILE_SIZE") {
-    return res.status(413).json({ error: `Each image must be ${process.env.MAX_IMAGE_MB || 3}MB or smaller.` });
+  if (error instanceof multer.MulterError) {
+    return res.status(400).json({ error: `Upload rejected: ${error.message}.` });
   }
   if (error?.message === "Unexpected field") return res.status(400).json({ error: "Use one target image and up to two reference images." });
   console.error(error);
