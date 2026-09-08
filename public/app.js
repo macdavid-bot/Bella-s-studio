@@ -172,7 +172,8 @@ $("#logoutButton").addEventListener("click", async () => {
 document.querySelectorAll("[data-close-modal]").forEach((element) => element.addEventListener("click", closeModal));
 $("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = new FormData(event.currentTarget);
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   $("#loginError").textContent = "";
   try {
     await api("/api/auth/login", {
@@ -180,7 +181,7 @@ $("#loginForm").addEventListener("submit", async (event) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: form.get("username"), password: form.get("password") })
     });
-    event.currentTarget.reset();
+    formElement.reset();
     showApp(true);
   } catch (error) {
     $("#loginError").textContent = error.message;
