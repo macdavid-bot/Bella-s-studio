@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
 
 :root {
-  --ink: #08080c;
-  --surface: #111116;
-  --surface-2: #17171e;
-  --surface-3: #202027;
+  --ink: #000000;
+  --surface: #000000;
+  --surface-2: #000000;
+  --surface-3: #000000;
   --line: rgba(255,255,255,.1);
   --muted: #95959f;
   --blue: #2017cb;
@@ -29,7 +29,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 .login-orb { border: 1px solid rgba(94,84,255,.2); border-radius: 999px; position: absolute; }
 .orb-one { height: 680px; right: -190px; top: -240px; width: 680px; box-shadow: 0 0 100px rgba(32,23,203,.12), inset 0 0 100px rgba(32,23,203,.08); }
 .orb-two { bottom: -340px; height: 570px; left: -280px; width: 570px; }
-.login-card { backdrop-filter: blur(20px); background: linear-gradient(145deg, rgba(30,30,38,.9), rgba(12,12,17,.88)); border: 1px solid var(--line); border-radius: 26px; box-shadow: 0 35px 100px rgba(0,0,0,.45); max-width: 440px; padding: 44px; position: relative; width: 100%; }
+.login-card { backdrop-filter: blur(20px); background: #000000; border: 1px solid var(--line); border-radius: 26px; box-shadow: 0 35px 100px rgba(0,0,0,.45); max-width: 440px; padding: 44px; position: relative; width: 100%; }
 .brand-lockup { align-items: center; display: flex; font-family: Manrope, sans-serif; font-size: 14px; font-weight: 700; gap: 11px; letter-spacing: -.02em; }
 .brand-mark { align-items: center; background: linear-gradient(135deg, #5a54ff, var(--blue)); border-radius: 9px; box-shadow: 0 7px 25px rgba(32,23,203,.5); display: inline-flex; font-family: Georgia, serif; font-size: 20px; height: 34px; justify-content: center; width: 34px; }
 .login-card h1 { font-family: Manrope, sans-serif; font-size: clamp(34px, 7vw, 52px); letter-spacing: -.07em; line-height: .98; margin: 55px 0 20px; }
@@ -46,7 +46,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 .form-error { color: #ff8d9c; font-size: 12px; min-height: 15px; margin: 0; }
 
 .app-shell { display: flex; min-height: 100vh; }
-.sidebar { background: #0c0c11; border-right: 1px solid var(--line); display: flex; flex: 0 0 245px; flex-direction: column; padding: 28px 22px 24px; }
+.sidebar { background: #000000; border-right: 1px solid var(--line); display: flex; flex: 0 0 245px; flex-direction: column; padding: 28px 22px 24px; }
 .sidebar-copy { border-bottom: 1px solid var(--line); margin-top: 74px; padding-bottom: 31px; }
 .sidebar-copy p:last-child { color: #74737e; font-family: Manrope, sans-serif; font-size: 19px; letter-spacing: -.05em; line-height: 1.28; margin: 0; }
 .sidebar-copy strong { color: white; font-weight: 600; }
@@ -70,7 +70,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 .topbar-meta { color: #8b8a94; font-size: 11px; }
 .topbar-meta .status-dot { margin-right: 10px; }
 .workspace-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) 325px; margin: 30px auto 0; max-width: 1250px; }
-.editor-card, .history-panel { background: linear-gradient(155deg, rgba(25,25,32,.98), rgba(14,14,19,.98)); border: 1px solid var(--line); border-radius: 18px; }
+.editor-card, .history-panel { background: #000000; border: 1px solid var(--line); border-radius: 18px; }
 .editor-card { padding: clamp(22px, 4vw, 40px); }
 .card-heading { align-items: center; display: flex; justify-content: space-between; margin-bottom: 19px; }
 .card-heading > div { align-items: center; display: flex; gap: 12px; }
@@ -78,7 +78,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 .card-heading h3, .history-heading h3 { font-family: Manrope, sans-serif; font-size: 16px; letter-spacing: -.04em; margin: 0; }
 .optional-label, .prompt-count { color: #686771; font-size: 10px; }
 .image-input-grid { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-.upload-zone { align-items: center; background: rgba(255,255,255,.025); border: 1px dashed #3a3945; border-radius: 13px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; min-height: 190px; overflow: hidden; padding: 20px; position: relative; text-align: center; transition: border .2s, background .2s; }
+.upload-zone { align-items: center; background: #000000; border: 1px dashed #3a3945; border-radius: 13px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; min-height: 190px; overflow: hidden; padding: 20px; position: relative; text-align: center; transition: border .2s, background .2s; }
 .upload-zone:hover, .upload-zone.has-file { background: rgba(32,23,203,.1); border-color: #524cff; }
 .upload-icon { align-items: center; background: rgba(255,255,255,.06); border-radius: 8px; color: #8b85ff; display: flex; font-size: 23px; height: 38px; justify-content: center; margin-bottom: 13px; width: 38px; }
 .upload-title { font-size: 13px; font-weight: 700; }
@@ -90,7 +90,7 @@ button, a, label { -webkit-tap-highlight-color: transparent; }
 .reference-preview img { border: 1px solid rgba(255,255,255,.3); border-radius: 5px; height: 24px; object-fit: cover; width: 24px; }
 .prompt-block { border-top: 1px solid var(--line); margin-top: 30px; padding-top: 27px; }
 .compact { margin-bottom: 12px; }
-textarea { background: #0d0d12; border: 1px solid #2d2c36; border-radius: 11px; color: white; font-size: 13px; line-height: 1.65; min-height: 137px; outline: none; padding: 16px; resize: vertical; width: 100%; }
+textarea { background: #000000; border: 1px solid #2d2c36; border-radius: 11px; color: white; font-size: 13px; line-height: 1.65; min-height: 137px; outline: none; padding: 16px; resize: vertical; width: 100%; }
 textarea:focus { border-color: #514aff; box-shadow: 0 0 0 3px rgba(32,23,203,.18); }
 textarea::placeholder { color: #5d5c67; }
 .prompt-hint { color: #666570; font-size: 10px; margin-top: 10px; }
@@ -103,9 +103,9 @@ textarea::placeholder { color: #5d5c67; }
 .history-heading .eyebrow { margin-bottom: 7px; }
 .count-pill { align-items: center; background: rgba(255,255,255,.07); border-radius: 99px; color: #a5a3af; display: flex; font-size: 10px; height: 22px; justify-content: center; width: 27px; }
 .history-list { display: grid; gap: 12px; margin-top: 19px; max-height: 660px; overflow: auto; padding-right: 2px; }
-.history-item { background: rgba(255,255,255,.035); border: 1px solid transparent; border-radius: 11px; cursor: pointer; overflow: hidden; transition: border .2s, transform .2s; }
+.history-item { background: #000000; border: 1px solid transparent; border-radius: 11px; cursor: pointer; overflow: hidden; transition: border .2s, transform .2s; }
 .history-item:hover { border-color: #413bda; transform: translateY(-2px); }
-.history-image { aspect-ratio: 1.25; background: linear-gradient(135deg, #242333, #0c0c10); display: block; object-fit: cover; width: 100%; }
+.history-image { aspect-ratio: 1.25; background: #000000; display: block; object-fit: cover; width: 100%; }
 .history-caption { padding: 10px 11px 12px; }
 .history-caption p { color: #c8c6d0; font-size: 10px; line-height: 1.4; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .history-caption small { color: #686771; display: block; font-size: 9px; margin-top: 6px; }
@@ -119,7 +119,7 @@ textarea::placeholder { color: #5d5c67; }
 .toast.error { background: #ff8b98; }
 .modal { align-items: center; display: flex; inset: 0; justify-content: center; padding: 24px; position: fixed; z-index: 20; }
 .modal-backdrop { background: rgba(0,0,0,.82); inset: 0; position: absolute; }
-.modal-card { background: #17171e; border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 30px 100px #000; max-height: 92vh; max-width: 880px; overflow: auto; position: relative; width: 100%; }
+.modal-card { background: #000000; border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 30px 100px #000; max-height: 92vh; max-width: 880px; overflow: auto; position: relative; width: 100%; }
 .modal-card > img { display: block; max-height: 72vh; object-fit: contain; width: 100%; }
 .modal-close { background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.15); border-radius: 50%; color: white; cursor: pointer; font-size: 22px; height: 33px; line-height: 20px; position: absolute; right: 14px; top: 14px; width: 33px; z-index: 2; }
 .modal-footer { align-items: center; display: flex; gap: 16px; justify-content: space-between; padding: 18px; }

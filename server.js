@@ -315,17 +315,20 @@ function buildGeminiPrompt(prompt, referenceCount) {
     "You are Bella's Studio's precision photo editor.",
     "Edit the target image according to the user's instruction.",
     "The target image is the source of truth for the person's identity and physical proportions.",
-    "Strictly preserve facial features, identity, skin tone, body size, body height, age, and natural anatomy.",
-    "Do not beautify, reshape, slim, stretch, shorten, or change the person's face unless the user explicitly asks for a permitted visual treatment; even then, preserve identity.",
+    "NON-NEGOTIABLE FACE PRESERVATION RULE: the target person's face must remain unchanged. Preserve the exact facial geometry, features, expression, eyes, eyebrows, nose, mouth, jawline, hairline, skin texture, skin tone, and identity. Never retouch, beautify, reshape, age, de-age, swap, regenerate, or otherwise alter the face, even if the user's prompt asks for it or omits this rule.",
+    "Do not beautify, reshape, slim, stretch, shorten, or change the person's body, identity, skin tone, body size, body height, age, or natural anatomy.",
     "Keep the target's composition and background unless the prompt requires a change.",
     referenceCount ? "Reference images are optional style or clothing guidance only; never copy their face or body identity onto the target." : "",
+    "If an edit would require changing the face, apply the edit everywhere else and leave the target face untouched.",
     `User instruction: ${prompt.trim()}`
   ].filter(Boolean).join("\n\n");
 }
 
 function buildControlNetPrompt(prompt) {
   return [
+    "The original target person's face is immutable. Preserve it exactly: facial geometry, features, expression, skin texture, skin tone, hairline, and identity must not change.",
     "Preserve the exact person, facial identity, skin tone, body size, height, and anatomy from the original target image.",
+    "Never alter or regenerate the face, regardless of the requested edit.",
     "Use the original target as structural and proportion guidance. Correct only unintended scale, body proportion, or posture drift while preserving the requested edit.",
     `Requested edit: ${prompt.trim()}`
   ].join("\n");
