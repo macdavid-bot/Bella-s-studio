@@ -21,7 +21,7 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash-image";
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || "";
 const REAL_ESRGAN_MODEL = process.env.REPLICATE_REAL_ESRGAN_MODEL || "nightmareai/real-esrgan";
 const CONTROLNET_MODEL = process.env.REPLICATE_CONTROLNET_MODEL || "lucataco/sdxl-lightning-multi-controlnet";
-const MAX_IMAGE_BYTES = Number(process.env.MAX_IMAGE_MB || 12) * 1024 * 1024;
+const MAX_IMAGE_BYTES = Number(process.env.MAX_IMAGE_MB || 8) * 1024 * 1024;
 const MAX_STORAGE_BYTES = Number(process.env.MAX_STORAGE_GB || 10) * 1024 * 1024 * 1024;
 const MAX_AGE_MS = Number(process.env.MAX_AGE_DAYS || 40) * 24 * 60 * 60 * 1000;
 const CLEANUP_INTERVAL_MS = 6 * 60 * 60 * 1000;
@@ -29,6 +29,7 @@ const COOKIE_NAME = "bella_session";
 const IS_SECURE = process.env.COOKIE_SECURE
   ? process.env.COOKIE_SECURE === "true"
   : process.env.NODE_ENV === "production";
+let activeJobId = null;
 
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const upload = multer({
@@ -401,6 +402,8 @@ async function processJob(job) {
     job.step = "Could not complete";
     job.error = error.message || "Something went wrong while creating the image.";
     await writeMetadata(job);
+  } finally {
+    if (activeJobId === job.id) activeJobId = null;
   }
 }
 
@@ -459,6 +462,7 @@ app.post("/api/generate", requireAuth, upload.fields([
   { name: "target", maxCount: 1 },
   { name: "references", maxCount: 2 }
 ]), async (req, res) => {
+  if (activeJobId) return res.status(409).json({ error: "One edit is already being created. Please wait for it to finish." });
   if (!req.files?.target?.[0]) return res.status(400).json({ error: "Upload a target image first." });
   const prompt = String(req.body?.prompt || "").trim();
   if (!prompt) return res.status(400).json({ error: "Describe the edit you want to make." });
@@ -512,7 +516,7 @@ app.get("/media/:jobId/:filename", requireAuth, async (req, res) => {
 
 app.use((error, _req, res, _next) => {
   if (error instanceof multer.MulterError || error?.code === "LIMIT_FILE_SIZE") {
-    return res.status(413).json({ error: `Each image must be ${process.env.MAX_IMAGE_MB || 12}MB or smaller.` });
+    return res.status(413).json({ error: `Each image must be ${process.env.MAX_IMAGE_MB || 8}MB or smaller.` });
   }
   if (error?.message === "Unexpected field") return res.status(400).json({ error: "Use one target image and up to two reference images." });
   console.error(error);

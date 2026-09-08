@@ -46,3 +46,5 @@ Model calls run server-side. The frontend only shows a single friendly generatio
 Generated jobs live under `DATA_DIR/jobs`. Completed jobs older than `MAX_AGE_DAYS` are removed automatically. If the directory grows beyond `MAX_STORAGE_GB`, the oldest non-running jobs are removed until at least 5GB has been cleared.
 
 The Docker Compose file applies the requested `150m` memory and `0.2` CPU limits. The limits constrain the app container; image generation compute and temporary provider-side processing happen in Gemini and Replicate.
+
+For the memory limit, the app defaults to 8MB per uploaded image and allows only one active generation at a time. Gemini and Replicate perform the GPU-heavy image work outside the VPS container.
