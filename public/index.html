@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#07070b" />
+    <title>Bella's Studio</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="toast" class="toast" role="status"></div>
+    <main id="loginView" class="login-shell hidden">
+      <div class="login-orb orb-one"></div>
+      <div class="login-orb orb-two"></div>
+      <section class="login-card">
+        <div class="brand-lockup">
+          <span class="brand-mark">B</span>
+          <span>Bella's Studio</span>
+        </div>
+        <p class="eyebrow">Private image atelier</p>
+        <h1>Make the image<br /><em>feel like you.</em></h1>
+        <p class="muted">A quiet, private workspace for precise photo edits and polished results.</p>
+        <form id="loginForm" class="stack-form">
+          <label>Username<input name="username" autocomplete="username" placeholder="Your studio username" required /></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" placeholder="Your studio password" required /></label>
+          <button class="primary-button" type="submit">Enter studio <span>↗</span></button>
+          <p id="loginError" class="form-error"></p>
+        </form>
+      </section>
+    </main>
+
+    <div id="appView" class="app-shell hidden">
+      <aside class="sidebar">
+        <div class="brand-lockup">
+          <span class="brand-mark">B</span>
+          <span>Bella's Studio</span>
+        </div>
+        <div class="sidebar-copy">
+          <p class="eyebrow">Private image atelier</p>
+          <p>Shape the picture.<br /><strong>Keep the person.</strong></p>
+        </div>
+        <nav class="side-nav">
+          <a class="active" href="#create"><span class="nav-icon">✦</span> Create</a>
+          <a href="#library"><span class="nav-icon">▦</span> Library</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="privacy-note"><span class="status-dot"></span><span><strong>Private by design</strong><small>Your images stay on this server.</small></span></div>
+          <button id="logoutButton" class="text-button">Log out <span>↗</span></button>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Workspace / New edit</p>
+            <h2>Bring an idea to life.</h2>
+          </div>
+          <div class="topbar-meta"><span class="status-dot"></span> Your studio is ready</div>
+        </header>
+
+        <div class="workspace-grid">
+          <section id="create" class="editor-card">
+            <div class="card-heading">
+              <div><span class="section-number">01</span><h3>Start with your images</h3></div>
+              <span class="optional-label">Up to 12MB each</span>
+            </div>
+            <div class="image-input-grid">
+              <label class="upload-zone target-zone" for="targetInput">
+                <input id="targetInput" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+                <span class="upload-icon">＋</span>
+                <span class="upload-title">Target image</span>
+                <span class="upload-help">The image you want to edit</span>
+                <span id="targetPreview" class="upload-preview"></span>
+              </label>
+              <label class="upload-zone reference-zone" for="referenceInput">
+                <input id="referenceInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
+                <span class="upload-icon">⌁</span>
+                <span class="upload-title">Reference images <small>Optional</small></span>
+                <span class="upload-help">Add up to 2 for style or clothing cues</span>
+                <span id="referencePreview" class="reference-preview"></span>
+              </label>
+            </div>
+
+            <div class="prompt-block">
+              <div class="card-heading compact">
+                <div><span class="section-number">02</span><h3>Describe the transformation</h3></div>
+                <span class="prompt-count"><span id="promptCount">0</span> / 600</span>
+              </div>
+              <textarea id="promptInput" maxlength="600" placeholder="Try: Change the outfit to a tailored ivory suit, keep the exact face and natural body proportions, and place the subject in a warm editorial studio light."></textarea>
+              <div class="prompt-hint"><span class="sparkle">✦</span> Be specific about what to change and what to preserve.</div>
+            </div>
+            <button id="generateButton" class="primary-button generate-button" type="button" disabled>Generate edit <span>↗</span></button>
+            <p class="privacy-line"><span>⌾</span> Original proportions, skin tone and identity are protected by default.</p>
+          </section>
+
+          <aside class="history-panel" id="library">
+            <div class="history-heading"><div><p class="eyebrow">Your archive</p><h3>Recent work</h3></div><span id="historyCount" class="count-pill">0</span></div>
+            <div id="historyList" class="history-list"><div class="empty-state"><span>✦</span><p>Your finished edits<br />will live here.</p></div></div>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <div id="previewModal" class="modal hidden">
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-card">
+        <button class="modal-close" data-close-modal>×</button>
+        <img id="modalImage" alt="Generated Bella's Studio edit" />
+        <div class="modal-footer"><div><p class="eyebrow">Bella's Studio edit</p><p id="modalPrompt"></p></div><a id="downloadLink" class="primary-button small-button" download>Download <span>↓</span></a></div>
+      </section>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
